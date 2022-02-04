@@ -1,0 +1,195 @@
+
+Topics
+1. Installing Linux through ISO.
+2. Login to system as root.
+3. Retrieve basic system information. 
+4. Check who is logged information.
+5. Get command information and help.
+6. Listing files and dircetories
+7. Creating files and dircetories
+8. Appending files
+9. View files
+10. Absolute and relative path.
+11. Check and set hostname for system
+12. Shutdown and reboot the system.
+13. Using vi / vim editor
+14. Inodes
+15. Hard and soft link
+16. Getting hardware information 
+17. Redirection
+
+
+Prompts
+-------
+# Prompt for root also called superuser
+$ Prompt for normal user
+
+System Information
+------------------
+uname 
+uname -a
+uname -r
+hostname
+uptime
+
+Check who is logged information
+-------------------------------
+w
+whoami
+last
+id
+
+
+Command information and help
+----------------------------
+which uname
+man
+locate
+
+Listing files and directories
+-----------------------------
+ls
+ls /etc
+ls -l
+ls -l /var/log
+ls -la
+ls -lR
+ls -laR /etc
+
+Creating and deleting files
+---------------------------
+cd /tmp
+touch file1 
+touch file2 file3 file4
+touch file{1..10}
+rm file1 file 2
+rm -f file3 file4
+
+Appending files
+---------------
+echo "This is Linux" >/tmp/testfile1
+cat /etc/redhat-release >>/tmp/testfile1
+uname -a >>/tmp/testfile1
+
+View files
+----------
+cat <filename>
+cat /tmp/testfile1
+tail /var/log/messages
+tail -n20 /var/log/messages
+head /var/log/messages
+head -n20 /var/log/messages
+more /var/log/messages
+less /var/log/messages
+
+Change to directory
+-------------------
+pwd
+cd <directory to change to>
+cd /tmp
+
+Creating and deleting directories
+---------------------------------
+cd /tmp
+mkdir <directory_name>
+mkdir dir1
+mkdir dir2 dir3 dir4
+mkdir testdir{1,2,3,4,5}
+mkdir -p /tmp/newdir/abc
+rm /tmp/dir1
+
+IMPORTANT
+USE "rm -rf" WITH CAUTION.
+NEVER EVER EXECUTE rm -rf /. THIS WILL DELETE ALL THE FILES AND DIRECTORIES IN THE SYSTEM MAKING THE SYSTEM UNUSABLE.
+rm -rf /tmp/dir2 /tmp/dir3 /tmp/dir4
+
+Absolute or full path
+---------------------
+cat /etc/redhat-release
+
+Relative path
+-------------
+cd /etc
+cat redhat-release
+
+Setting hostname of system
+--------------------------
+hostnamectl
+hostnamectl set-hostname <hostname>
+cat /etc/hostname
+
+System shutdown and reboot commands
+-----------------------------------
+init 0
+shutdown -h now
+halt
+poweroff
+init 6
+shutdown -r now
+reboot
+
+
+Hardlink and softlink
+---------------------
+ls -li /tmp
+ls -li /lib*
+
+ln -s <source> <link>
+cd /tmp
+ln -s /boot/grub2 grub2
+ln -s /boot/vmlinuz-3.10.0-1062.el7.x86_64 kernel
+ls -li /tmp/grub2 /tmp/kernel
+
+cd /tmp
+echo "this is to test hardlink" >/tmp/hardlink_file
+ln hardlink_file hardlink_file1
+ls -li hardlink_file*
+
+Hardware information
+--------------------
+dmidecode | more
+dmidecode -t0
+dmodecode -t1
+dmidecode -t2
+dmodecode -t3
+dmidecode -t4
+dmodecode -t5
+
+Text editor
+-----------
+vi / vim 
+Two modes:
+1. Insert Mode
+2. Esc mode or command mode.
+Esc
+:w -- write to the file
+:q -- quit the editor
+:wq -- write ancd quit the editor
+:q!  -- quit with out writing to the file
+yy -- yank line or copy line
+p -- paste
+%s/what_to_replace/what_tobe_replaced/g
+Esc :wq
+Esc :set nu
+Esc u -- undo
+Esc O -- open new line above
+Esc o -- open new line below
+Esc /word -- search for the word
+
+Redirection
+------------
+Redirects standard output to a file
+ls -l /tmp/test /tmp/new > /tmp/log
+
+Redirects standard error to a file
+ls -l /tmp/test /tmp/new 2> /tmp/log1
+
+Redirecting both stdout and stderr to /dev/null
+ls -l /tmp/test /tmp/new &> /tmp/log2
+
+Redirecting both stdout and stderr to /dev/null
+ls -l /tmp/test /tmp/new &> /dev/null
+
+Sending the output of a command as input to another ( using pipe | )
+cat /etc/hosts | grep localhost 
+ls -l / | grep lib
