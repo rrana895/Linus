@@ -1,0 +1,412 @@
+
+
+Topics
+1. User management
+2. Group management
+3. Using grep and grep -E
+4. File compression and tar archive utilities
+5. Network Configuration
+6. Linux File System Object Types
+7. File and directory permissions
+8. Special permission (SUID, SGID, stickybit)
+9. ssh, ssh-keygen and scp
+
+
+Adding users and groups
+-----------------------
+# useradd -D
+# useradd --help
+# man useradd
+# which useradd
+
+/etc/passwd – User account information.
+/etc/shadow – Secure account information.
+/etc/group – Group account information.
+/etc/skell -- Skeleton directory
+
+# ls -ls /etc/skel
+useradd <username>
+# usradd user1
+passwd <username>
+# passwd user1
+# ls -l /home | grep user1
+# ls -la /home/user1
+
+-u UID
+-g primay group
+-G secvondary group
+-e  expiration date of the new account
+-s login shell of the new account. Default enabled
+-m Create home directory. Default enabled
+
+# groupadd admin
+# groupadd sysadmin accounts hr sales marketing support users
+
+# useradd -G admins,sysadmin,support -g users -e 2021-12-31 -c "System Administrator" user2
+# passwd user2
+# id user2
+# cat /etc/group | grep user2
+# cat /etc/passwd | grep user2
+# chage -l user2
+
+/etc/passwd file format
+[username]:[x]:[UID]:[GID]:[Comment/GCOS]:[Home directory]:[Default shell]
+
+/etc/group file format
+[Group name]:[Group password]:[GID]:[Group members]
+
+usermod [options] [username]
+
+usermod
+-------
+# man usermod
+# usermod --help
+# which usermod
+
+Get user information
+# lslogins -u user1
+
+Change user settings.
+# usermod -c "Normal User" user1
+# usermod -e 2021-11-30 user1
+# lslogins -u user1
+# chage -l user1
+# id user1
+# usermod -G support user1
+# id user1
+# usermod -L user1 
+# chage -l user1
+# usermod -U user1
+# chage -l user1
+
+Adding a user to a group
+# man gpasswd
+# gpasswd -s user1 admin
+# groups user1
+
+Deleting a user from a group
+# gpasswd -d user1 admin
+# groups user1
+
+user and grup del
+-------
+# userdel -r user1
+# groupdel hr
+
+
+Login information
+-----------------
+# w
+# whoami
+# id
+# last
+
+
+Regular Expression
+------------------
+Paste the below contents to a file named /tmp/messages. This is for grep exercise.
+
+< -------- Copy START
+error
+Error in this file
+this file has error
+The kernel version is 3.10.56-235
+The Kernel is new
+Kernel is latest
+This is Red Hat version 7.7
+redhat is an opensource company
+zsh
+< ----- Copy END
+
+grep <flags> '<regular expression>' <filename>
+
+Display all the pattern matches from /tmp/messages file.
+# grep -E 'error|kernel|redhat' /tmp/messages
+
+Match all lines that start with "Kernel".
+# grep "^Kernel" /tmp/messages
+
+Match all lines that end with "error".
+# grep "error$" /tmp/messages
+
+Match all lines that start with a digit following zero or more spaces.
+# grep "*[0-9]" /tmp/messages
+
+Match all lines that has a digit following zero or more spaces.
+# grep "[0-9]" /tmp/messages
+
+Match all lines that contain the word kernel in upper-case or lower-case
+# grep -i "kernel" /tmp/messages
+
+egrep
+egrep is 100% equivalent to grep -E
+egrep is an acronym that stands for "Extended Global Regular Expressions Print".
+
+
+Network Configuration
+---------------------
+# ifconfig
+# ip a
+# route -n
+
+# cd /etc/sysconfig/network-scripts/
+# ls -l | grep ifcfg-*
+
+View or change the network configuration file.
+NOTE#
+In this example the name of NIC PORT is enp0s3. Change it according to your system.
+# cat /etc/sysconfig/network-scripts/ifcfg-enp0s3
+TYPE="Ethernet"
+BOOTPROTO="none"   <-------------- ( This could be none or static when you are manually assigning IP address ).
+IPADDR=192.168.1.20
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.254
+DEFROUTE="yes"
+NAME="enp0s3"
+UUID="2a02699a-b25b-4916-b619-650575079376"
+DEVICE="enp0s3"
+ONBOOT="yes"
+
+
+ping <gateway>
+
+# man ping
+
+Ping gateway IP 192.168.1.254 and stop ping after 5 counts.
+
+# ping -c 5 192.168.1.254
+PING 192.168.1.254 (192.168.1.254) 56(84) bytes of data.
+64 bytes from 192.168.1.254: icmp_seq=1 ttl=64 time=1.53 ms
+64 bytes from 192.168.1.254: icmp_seq=2 ttl=64 time=1.53 ms
+64 bytes from 192.168.1.254: icmp_seq=3 ttl=64 time=1.17 ms
+64 bytes from 192.168.1.254: icmp_seq=4 ttl=64 time=2.27 ms
+64 bytes from 192.168.1.254: icmp_seq=5 ttl=64 time=2.24 ms
+
+--- 192.168.1.254 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 4012ms
+rtt min/avg/max/mdev = 1.178/1.751/2.271/0.434 ms
+
+
+File compression and tar archive utilities
+------------
+man gzip
+which gzip
+whereis gzip
+
+man bzip2
+which bzip2
+whereis bzip2
+
+With gzip / bzip2 only files can be compressed, not directories
+cd /tmp
+Compress a single file and keep the original
+gzip -c /var/log/messages > messagesgz
+
+Compress a single file and keep the original
+bzip -c /var/log/messages > messages.bz2
+
+ls -l /var/log/messages*
+file /var/log/messages*
+
+Uncompress the file.
+cd /tmp
+gunzip messages.gz
+bunzip2 messages.bz2
+
+Tar - Archive utility
+man tar
+which tar
+whereis tar
+
+cd /var/tmp
+tar -cvf /var/log log.tar
+tar -cvf log.tar /var/log
+du -sh log.tar
+tar -czvf log.tar.gz /var/log
+du -sh log.tar.gz
+tar -cjvf log.tar.bz2 /var/log
+du -sh log.tar.bz2
+tar -cJvf log.tar.xz /var/log
+ls -l log.tar*
+du -sh log.tar*
+file log.tar*
+
+Combining tar archive and compression utility - gzip / bzip2
+tar zcvf test.tgz test
+tar jcvf test.bz2 test
+
+# ls -l log.tar*
+-rw-r--r--. 1 root root 99450880 Feb 22 16:26 log.tar
+-rw-r--r--. 1 root root  6338301 Feb 22 16:28 log.tar.bz2
+-rw-r--r--. 1 root root  7550641 Feb 22 16:27 log.tar.gz
+-rw-r--r--. 1 root root  3782964 Feb 22 16:29 log.tar.xz
+
+# du -sh log.tar*
+95M     log.tar
+6.1M    log.tar.bz2
+7.3M    log.tar.gz
+3.7M    log.tar.xz
+
+# file log.tar*
+log.tar:     POSIX tar archive (GNU)
+log.tar.bz2: bzip2 compressed data, block size = 900k
+log.tar.gz:  gzip compressed data, from Unix, last modified: Sat Feb 22 16:27:34 2020
+log.tar.xz:  XZ compressed data
+
+Extracting
+tar -xzvf log.tar.gz -C /var/tmp/
+tar -xjvf log.tar.bz2 -C /var/tmp/
+tar -xJvf log.tar.xz -C /var/tmp/
+
+Linux File System Object Types
+------------------------------
+Code 	Object Type
+--------------------
+- 	Regular file
+d 	directory
+l 	Symbolic link
+c 	Character special device
+b 	Block special device
+p 	FIFO
+s 	Socket
+
+File and directory permissions
+------------------------------
+1 - Execute (x)
+2 - Write (w)
+3 - Write & Execute (wx)
+4 - Read (r)
+5 - Read & Execute (rx)
+6 - Read & Write (rw)
+7 - Read & Write & Execute (rwx)  - Maximum permission that you can have for a file / directory.
+
+Examples:
+rwx - 7
+rw - 6
+rx - 5
+
+---------
+Owner group others
+rwx --- ---
+r-- r-- r--
+rwx rx- rx-
+
+umask
+-----
+umask for root 0022  (777 - 022 ) = 755 rwxr-xr-x
+rwxr-xr-x 755 = (777 - 022 )
+umask for user 0002  (777 - 002 ) = 775 rwxrwxr-x
+rwxr-x--- 750 = ( 777 - 027 ) 
+
+
+touch /tmp/newfile
+chown <user_name>:<group_name> /tmp/newfile
+chown user1:sysadmin /tmp/newfile
+
+chown <user_name>:<group_name> directory
+chown user1:sysadmin /tmp/newdir
+
+ls -ld /tmp/newdir
+ls -l /tmp/newdir
+chown -R user1:sysadmin /tmp/newdir
+
+ls -l /tmp
+ls -ld /tmp
+
+chmod
+-----
+chmod 770 /tmp/testfile1
+chmod 750 /tmp/newdir
+ls -l /tmp/testfile1
+ls -ld /tmp/newdir
+
+chmod u+rw,g-w,o-w file1
+
+SetUID
+chmod 4755 /var/tmp/file1
+chmod u+s /var/tmp/file1
+
+ls -l /usr/bin/passwd
+
+SetGID
+chmod 2755 /var/tmp/test
+chmod g+s /var/tmp/test
+
+StickyBit
+chmod 1777  /var/tmp/data
+chmod +t /var/tmp/data
+
+1 = sticky bit
+2 = setgid (set group id)
+4 = setuid (set user id)
+
+
+Retrieving hardware and system information 
+# dmidecode
+# lscpu
+# lspci
+# dmesg
+# lsblk
+# blkid
+# /proc/cpuinfo
+# /proc/meminfo
+# df -HPT
+# free
+
+
+Configuring elevated access for user using sudo.
+--------------------------------------------
+sudo allows a permitted user to execute a command as root (or another user), as specified by the security policy:
+It reads and parses /etc/sudoers, looks up the invoking user and its permissions,
+then prompts the invoking user for a password (normally the user’s password, but it can as well be the target user’s password. Or it can be skipped with NOPASSWD tag),
+after that, sudo creates a child process in which it calls setuid() to switch to the target user
+next, it executes a shell or the command given as arguments in the child process above.
+
+Sudo configuration file: /etc/sudoers
+# cat /etc/sudoers
+
+The syntax specification for a rule in the sudoers file is:
+user (host)=(user:group) commands
+
+Search for wheel in this file
+
+%wheel ALL=(ALL)       ALL	# Allow users in wheel to execute any command 
+%wheel ALL=(ALL)       NOPASSWD: ALL  # Allo users in wheel group to execute any command without providing password.
+
+Add users to wheel group for whome suo access is required.
+# gpasswd -a natasha wheel
+
+Log files
+/var/log/secure
+
+If you want to setup individual files.
+# cat /etc/sudoers.d/sysadmin_sudo
+paul ALL=(ALL) NOPASSWD: ALL
+natasha ALL=(ALL) NOPASSWD: /usr/sbin/useradd, /usr/sbin/userdel
+kamla ALL=(ALL) NOPASSWD: !/usr/sbin/useradd, !/usr/sbin/userdel
+
+
+ssh keygen
+-----------
+Create a user named natasha and parker on server
+Login as natasha and execute below commands
+$ ssh-keygen
+$ ls -la /home/natasha/.ssh
+
+As natasha user copy the public key to parker's home directory on server.
+$ ssh-copy-id -i /home/natasha/.ssh/id_rsa.pub parker@server.example.com
+Login as user parker and check for this file in server under /home/parker/.ssh/authorized_keys
+$ ls -la /home/parker/.ssh/authorized_keys
+
+Test
+From server as user natasha login to server as user parker
+$ ssh parker@server.example.com
+You should be able to login without password
+
+
+Remote copy (scp)
+-----------
+As user natasha in server
+$ echo "This is Natasha" >file1
+
+$ scp file1 parker@server.example.com:~
